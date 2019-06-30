@@ -6,4 +6,4 @@ R package with tools for teaching and practicing program evaluation in the publi
 
 ## Visualization of Measurement Error in the DV
 
-![docs/images/measurement-error-in-dv-large.png]()
+![](docs/images/measurement-error-in-dv-large.gif)
