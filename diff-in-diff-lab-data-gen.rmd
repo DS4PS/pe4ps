@@ -1,0 +1,194 @@
+---
+title: "lab"
+output:
+  html_document:
+    theme: readable
+    highlight: tango
+    toc: true
+    self_contained: false
+    number_sections: false
+    css: textbook.css
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+```{r}
+library( scales )
+```
+
+
+![](figures/diff-in-diff-lab.png)
+
+```{r }
+#High SES
+HS0 <- -.11 + rnorm( n=28, mean=2.344, sd=1.161 )
+HS0 <- rescale(HS0, c(-1.271, 1.051))
+
+HS1 <- HS0 + (.39-(-.11)) + rnorm( 28, 2.344, 1.153 )
+HS1 <- rescale(HS1, c(-0.763,1.543))
+
+HS2 <- HS1 + (2.28-0.39) + rnorm( 28, 2.344, 1.169)
+HS2 <- rescale(HS2, c(1.111, 3.449))
+
+HS3 <- HS2 + (4.27-2.28)  + rnorm( 28, 2.344, 1.263 ) 
+HS3 <- rescale(HS3, c(3.007, 5.533))
+
+HS4 <- HS3 + (4.89-4.27) + rnorm(28, 2.344, 1.164)
+HS4 <- rescale(HS4, c(3.726, 6.054))
+
+#T4
+T40 <- -1.82 + rnorm( n=50, mean=1.44, sd=1.161 )
+T40 <- rescale(T40, c(-2.981, -0.659))
+
+T41 <- T40 + (.21-(-1.82)) + rnorm( 50, 1.44, 1.153 )
+T41 <- rescale(T41, c(-0.943, 1.363))
+
+T42 <- T41 + (1.80-0.21) + rnorm( 50, 1.44, 1.169)
+T42 <- rescale(T42, c(.631, 2.969))
+
+T43 <- T42 + (3.35-1.80)  + rnorm( 50, 1.44, 1.263 ) 
+T43 <- rescale(T43, c(2.087, 4.613))
+
+T44 <- T43 + (3.66-3.35) + rnorm(50, 1.44, 1.164)
+T44 <- rescale(T44, c(2.496, 4.824))
+
+#T3
+T30 <- -1.72 + rnorm( n=47, mean=1.054, sd=1.161 )
+T30 <- rescale(T30, c(-2.881, -0.559))
+
+T31 <- T30 + (-1.06-(-1.72)) + rnorm( 47, 1.054, 1.153 )
+T31 <- rescale(T31, c(-2.213, 0.093))
+
+T32 <- T31 + (1.64-(-1.06)) + rnorm( 47, 1.054, 1.169)
+T32 <- rescale(T32, c(.471, 2.809))
+
+T33 <- T32 + (3.06-1.64)  + rnorm( 47, 1.054, 1.263 ) 
+T33 <- rescale(T33, c(1.797,4.323))
+
+T34 <- T33 + (3.35-3.06) + rnorm(47, 1.054, 1.164)
+T34 <- rescale(T34, c(2.186, 4.514))
+
+#T2
+T20 <- -1.94 + rnorm( n=49, mean=0.58, sd=1.161 )
+T20 <- rescale(T20, c(-3.101, -0.779))
+
+T21 <- T20 + (-1.22-(-1.94)) + rnorm( 49, 0.58, 1.153 )
+T21 <- rescale(T21, c(-2.373, -0.067))
+
+T22 <- T21 + (.30-(-1.22)) + rnorm( 49, 0.58, 1.169)
+T22 <- rescale(T22, c(-0.869, 1.469))
+
+T23 <- T22 + (2.61-.30)  + rnorm( 49, 0.58, 1.263 ) 
+T23 <- rescale(T23, c(1.347, 3.873))
+
+T24 <- T23 + (3.15-2.61) + rnorm(49, 0.58, 1.164)
+T24 <- rescale(T24, c(1.986, 4.314))
+
+#T1
+T10 <- -1.83 + rnorm( n=90, mean=0.438, sd=1.161 )
+T10 <- rescale(T10, c(-2.991, -0.669))
+
+T11 <- T10 + (-1.11-(-1.83)) + rnorm( 90, 0.438, 1.153 )
+T11 <- rescale(T11, c(-2.263, 0.043))
+
+T12 <- T11 + (0.33-(-1.11)) + rnorm( 90, 0.438, 1.169)
+T12 <- rescale(T12, c(-0.839, 1.499))
+
+T13 <- T12 + (2.07-.33)  + rnorm( 90, 0.438, 1.263 ) 
+T13 <- rescale(T13, c(.807, 3.333))
+
+T14 <- T13 + (2.73-2.07) + rnorm(90, 0.438, 1.164)
+T14 <- rescale(T14, c(1.566, 3.894))
+
+# check correlations
+cor( data.frame( HS0, HS1, HS2, HS3, HS4 ) )
+cor( data.frame( T40, T41, T42, T43, T44 ) )
+cor( data.frame( T30, T31, T32, T33, T34 ) )
+cor( data.frame( T20, T21, T22, T23, T24 ) )
+cor( data.frame( T10, T11, T12, T13, T14 ) )
+
+ability.hs <- c( HS0, HS1, HS2, HS3, HS4 )
+ability.t4 <- c( T40, T41, T42, T43, T44 )
+ability.t3 <- c( T30, T31, T32, T33, T34 )
+ability.t2 <- c( T20, T21, T22, T23, T24 )
+ability.t1 <- c( T10, T11, T12, T13, T14 )
+
+# Then create a set of group vectors, in this case 3 groups and 4 time periods.
+
+high.ses <- rep( "high.ses", 140 )
+study.period.hs <- rep( c("time0","time1","time2","time3", "time4"), each=28 )
+
+t4 <- rep("time4", 250)
+study.period.t4 <- rep( c("time0","time1","time2","time3", "time4"), each=50)
+
+t3 <- rep("time3", 235)
+study.period.t3 <- rep( c("time0","time1","time2","time3", "time4"), each=47 )
+
+t2 <- rep("time2", 245)
+study.period.t2 <- rep( c("time0","time1","time2","time3", "time4"), each=49 )
+
+t1 <- rep("time1", 450)
+study.period.t1 <- rep( c("time0","time1","time2","time3", "time4"), each=90 )
+
+
+d1 <- data.frame(  ability=ability.hs, study.group=high.ses, study.period=study.period.hs )
+d2 <- data.frame(  ability=ability.t4, study.group=t4,       study.period=study.period.t4 )
+d3 <- data.frame(  ability=ability.t3, study.group=t3,       study.period=study.period.t3 )
+d4 <- data.frame(  ability=ability.t2, study.group=t2,       study.period=study.period.t2 )
+d5 <- data.frame(  ability=ability.t1, study.group=t1,       study.period=study.period.t1 )
+
+# with all three groups 
+d <- rbind( d1, d2, d3, d4, d5 )
+
+# create dummies for all categories: 
+d$hs.dummy <- as.numeric( d$study.group == "high.ses" )
+d$t4.dummy <- as.numeric( d$study.group == "t4")
+d$t3.dummy <- as.numeric( d$study.group == "t3")
+d$t2.dummy <- as.numeric( d$study.group == "t2")
+d$t1.dummy <- as.numeric( d$study.group == "t1")
+d$time0.dummy <- as.numeric( d$study.period == "time0" )
+d$time1.dummy <- as.numeric( d$study.period == "time1" )
+d$time2.dummy <- as.numeric( d$study.period == "time2" )
+d$time3.dummy <- as.numeric( d$study.period == "time3" )
+d$time4.dummy <- as.numeric( d$study.period == "time4" )
+
+head(d)
+
+
+
+# need to rescale the ability variable so it is between 2 and 5
+```
+
+```{r}
+options(scipen = 999)
+
+hist( d$ability )
+
+
+
+m1 <- lm( ability ~ hs.dummy + hs.dummy*time4.dummy, data=d )
+summary( m1 )
+
+
+d2 <- dplyr::filter( d, study.group %in% c("high.ses","time4") & study.period %in% c("time0","time1") )
+
+d2$treat.dummy <- as.numeric( d2$study.group == "time4" )
+d2$post.dummy <- as.numeric( d2$study.period == "time1" )
+d2$treat.post.dummy <- d2$treat.dummy * d2$post.dummy
+
+
+m2 <- lm( ability ~ treat.dummy + post.dummy + treat.post.dummy, data=d2 )
+summary( m2 )
+
+
+these.hs.t0 <- d2$study.group == "high.ses" & d2$study.period == "time0" 
+mean( d2$ability[ these.hs.t0 ] )
+
+
+```
+
+
+
